@@ -22,6 +22,10 @@
             --light: #e0f8ff;
         }
 
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             background-color: var(--darker);
             color: var(--light);
@@ -299,7 +303,7 @@
         .tokenomics-chart {
             flex: 1;
             position: relative;
-            height: 300px;
+            height: 400px;
         }
 
         .chart-container {
@@ -330,25 +334,25 @@
         }
 
         .chart-item-1 {
-            top: 20%;
+            top: 40%;
             left: 10%;
             border-color: var(--primary);
         }
 
         .chart-item-2 {
-            top: 10%;
+            top: 20%;
             right: 20%;
             border-color: var(--secondary);
         }
 
         .chart-item-3 {
-            bottom: 20%;
+            bottom: 30%;
             left: 20%;
             border-color: var(--accent);
         }
 
         .chart-item-4 {
-            bottom: 10%;
+            bottom: 20%;
             right: 10%;
             border-color: #00ff88;
         }
@@ -439,6 +443,88 @@
             max-width: 700px;
             margin: 0 auto 40px;
             color: rgba(224, 248, 255, 0.8);
+        }
+
+        /* Whitepaper Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 5, 16, 0.9);
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: var(--darker);
+            margin: 50px auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.3);
+            position: relative;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .close-modal:hover {
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .whitepaper-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 243, 255, 0.3);
+        }
+
+        .whitepaper-header h2 {
+            font-size: 2.2rem;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .whitepaper-header p {
+            color: rgba(224, 248, 255, 0.7);
+        }
+
+        .whitepaper-section {
+            margin-bottom: 30px;
+        }
+
+        .whitepaper-section h3 {
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.4rem;
+        }
+
+        .whitepaper-section p {
+            line-height: 1.6;
+            margin-bottom: 15px;
+            color: rgba(224, 248, 255, 0.8);
+        }
+
+        .whitepaper-download {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 243, 255, 0.3);
         }
 
         /* Footer */
@@ -564,6 +650,11 @@
                 flex-direction: column;
                 gap: 30px;
             }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -598,7 +689,7 @@
             <p>The first quantum-enhanced token on Pump.fun that uses entanglement principles to ensure all participants benefit from price movements. Our revolutionary algorithm creates a symbiotic ecosystem where gains are distributed across the network.</p>
             <div class="hero-buttons">
                 <button class="cta-button">Buy on Pump.fun</button>
-                <button class="secondary-button">Read Whitepaper</button>
+                <button class="secondary-button" id="whitepaper-btn">Read Whitepaper</button>
             </div>
         </div>
     </section>
@@ -641,42 +732,4 @@
     </section>
 
     <!-- Tokenomics Section -->
-    <section class="tokenomics" id="tokenomics">
-        <div class="container">
-            <h2 class="section-title">Quantum Tokenomics</h2>
-            <div class="tokenomics-content">
-                <div class="tokenomics-text">
-                    <p>Our token distribution is designed to create a balanced and sustainable ecosystem where every participant has the opportunity to benefit from the network's growth.</p>
-                    <br>
-                    <p>The Quantum Gain token employs a deflationary model with a maximum supply of 1 billion tokens. Transaction fees are strategically allocated to benefit holders, fund development, and ensure liquidity.</p>
-                    <br>
-                    <p>Our unique "entanglement pool" creates a dynamic relationship between buying and selling pressure, smoothing out volatility while maintaining upward momentum during network growth.</p>
-                    <br>
-                    <button class="cta-button" style="margin-top: 20px;">View Full Tokenomics</button>
-                </div>
-                <div class="tokenomics-chart">
-                    <div class="chart-container">
-                        <div class="chart-item chart-item-1">
-                            <div class="chart-percentage">40%</div>
-                            <div class="chart-label">Public Sale</div>
-                        </div>
-                        <div class="chart-item chart-item-2">
-                            <div class="chart-percentage">25%</div>
-                            <div class="chart-label">Liquidity Pool</div>
-                        </div>
-                        <div class="chart-item chart-item-3">
-                            <div class="chart-percentage">20%</div>
-                            <div class="chart-label">Ecosystem Fund</div>
-                        </div>
-                        <div class="chart-item chart-item-4">
-                            <div class="chart-percentage">15%</div>
-                            <div class="chart-label">Team & Development</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- How It Works Section -->
-    <section class="how-it-works" id="how-it-work
+    <section class="tokenomic
