@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Gain ($QG) | Live on pump.fun</title>
+    <meta name="description" content="$QG — a Solana memecoin launched on pump.fun. No presale, no taxes, fixed 1B supply.">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+        :root {
+            --primary: #00f3ff;
+            --secondary: #7700ff;
+            --accent: #ff00c8;
+            --green: #00ff88;
+            --dark: #0a0a1a;
+            --darker: #050510;
+            --light: #e0f8ff;
+            --muted: rgba(224, 248, 255, 0.75);
+        }
+
+        html { scroll-behavior: smooth; }
+        section { scroll-margin-top: 90px; }
+
+        body {
+            background-color: var(--darker);
+            color: var(--light);
+            overflow-x: hidden;
+            background-image:
+                radial-gradient(circle at 10% 20%, rgba(119, 0, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(0, 243, 255, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 200, 0.05) 0%, transparent 50%);
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* Header */
+        header {
+            padding: 16px 0; position: fixed; width: 100%; top: 0; z-index: 1000;
+            background: rgba(5, 5, 16, 0.85); backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 243, 255, 0.2);
+        }
+        .header-content { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+        .logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 700; color: var(--primary); text-shadow: 0 0 10px var(--primary); white-space: nowrap; }
+        .logo i { color: var(--accent); }
+        nav ul { display: flex; list-style: none; gap: 28px; }
+        nav a { color: var(--light); text-decoration: none; font-weight: 500; transition: color 0.3s ease; position: relative; }
+        nav a:hover { color: var(--primary); }
+        nav a::after { content: ''; position: absolute; bottom: -5px; left: 0; width: 0; height: 2px; background: var(--primary); transition: width 0.3s ease; }
+        nav a:hover::after { width: 100%; }
+
+        .cta-button {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            color: var(--darker); border: none; padding: 10px 25px; border-radius: 30px;
+            font-weight: 700; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.5); text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+            font-size: 0.95rem;
+        }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 0 20px rgba(0, 243, 255, 0.8); }
+        .cta-button.connected { background: rgba(0, 243, 255, 0.12); color: var(--primary); border: 1px solid var(--primary); box-shadow: none; }
+
+        .secondary-button {
+            background: transparent; color: var(--primary); border: 2px solid var(--primary);
+            padding: 10px 25px; border-radius: 30px; font-weight: 700; cursor: pointer;
+            transition: all 0.3s ease; text-decoration: none; display: inline-flex; align-items: center; gap: 8px; font-size: 0.95rem;
+        }
+        .secondary-button:hover { background: rgba(0, 243, 255, 0.1); box-shadow: 0 0 15px rgba(0, 243, 255, 0.3); }
+
+        /* Wallet menu */
+        .wallet-wrap { position: relative; }
+        .wallet-menu {
+            display: none; position: absolute; right: 0; top: calc(100% + 10px); min-width: 240px;
+            background: var(--dark); border: 1px solid rgba(0, 243, 255, 0.35); border-radius: 12px;
+            padding: 14px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5); z-index: 1100;
+        }
+        .wallet-menu.open { display: block; }
+        .wallet-menu .row { display: flex; justify-content: space-between; font-size: 0.9rem; padding: 6px 0; color: var(--muted); }
+        .wallet-menu .row strong { color: var(--light); }
+        .wallet-menu button {
+            width: 100%; margin-top: 8px; padding: 9px; border-radius: 8px; cursor: pointer; font-weight: 600;
+            background: rgba(0, 243, 255, 0.08); border: 1px solid rgba(0, 243, 255, 0.3); color: var(--light);
+        }
+        .wallet-menu button:hover { border-color: var(--primary); }
+        .wallet-menu button.danger:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* Hero */
+        .hero { padding: 170px 0 100px; text-align: center; position: relative; }
+        .hero-bg { position: absolute; inset: 0; z-index: -1; opacity: 0.3; background: radial-gradient(circle at center, var(--secondary) 0%, transparent 70%); }
+        .badge { display: inline-block; padding: 6px 16px; border-radius: 20px; border: 1px solid var(--green); color: var(--green); font-size: 0.85rem; font-weight: 600; margin-bottom: 20px; }
+        .hero h1 {
+            font-size: 4rem; margin-bottom: 10px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .ticker { font-size: 1.4rem; color: var(--accent); font-weight: 700; margin-bottom: 20px; }
+        .hero p { font-size: 1.15rem; max-width: 680px; margin: 0 auto 30px; line-height: 1.6; color: var(--muted); }
+        .hero-buttons { display: flex; justify-content: center; gap: 16px; margin-top: 26px; flex-wrap: wrap; }
+
+        .ca-box {
+            display: inline-flex; align-items: center; gap: 12px; max-width: 100%;
+            background: rgba(5, 5, 16, 0.8); border: 1px dashed rgba(0, 243, 255, 0.5);
+            border-radius: 12px; padding: 12px 16px; margin-top: 10px;
+        }
+        .ca-box .label { color: var(--accent); font-weight: 700; font-size: 0.85rem; }
+        .ca-box code { font-family: Consolas, monospace; color: var(--light); font-size: 0.95rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .ca-box button { background: none; border: none; color: var(--primary); cursor: pointer; font-size: 1.05rem; }
+
+        /* Background circuit */
+        .quantum-circuit { position: absolute; inset: 0; z-index: -2; overflow: hidden; }
+        .circuit-line { position: absolute; background: rgba(0, 243, 255, 0.1); height: 1px; width: 100%; animation: circuitPulse 8s infinite; }
+        .circuit-node { position: absolute; width: 8px; height: 8px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 10px var(--primary); animation: nodePulse 4s infinite; }
+        @keyframes circuitPulse { 0%, 100% { opacity: 0.1; } 50% { opacity: 0.4; } }
+        @keyframes nodePulse { 0%, 100% { transform: scale(1); opacity: 0.7; } 50% { transform: scale(1.5); opacity: 1; } }
+
+        /* Sections */
+        .features, .how-it-works { padding: 100px 0; background: rgba(10, 10, 26, 0.7); }
+        .tokenomics { padding: 100px 0; }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 20px; color: var(--primary); }
+        .section-sub { text-align: center; color: var(--muted); max-width: 640px; margin: 0 auto 50px; line-height: 1.6; }
+
+        .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 26px; }
+        .feature-card {
+            background: rgba(5, 5, 16, 0.7); border: 1px solid rgba(0, 243, 255, 0.2); border-radius: 15px;
+            padding: 28px; transition: all 0.3s ease; position: relative; overflow: hidden;
+        }
+        .feature-card:hover { transform: translateY(-8px); box-shadow: 0 10px 30px rgba(0, 243, 255, 0.2); border-color: var(--primary); }
+        .feature-icon { font-size: 2.2rem; margin-bottom: 18px; color: var(--accent); }
+        .feature-card h3 { font-size: 1.35rem; margin-bottom: 12px; color: var(--primary); }
+        .feature-card p { color: var(--muted); line-height: 1.6; }
+
+        /* Tokenomics */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 22px; }
+        .stat {
+            text-align: center; padding: 30px 20px; border-radius: 15px; background: rgba(5, 5, 16, 0.8);
+            border: 2px solid; box-shadow: 0 0 20px rgba(0, 243, 255, 0.15); transition: transform 0.3s ease;
+        }
+        .stat:hover { transform: scale(1.04); }
+        .stat:nth-child(1) { border-color: var(--primary); }
+        .stat:nth-child(2) { border-color: var(--secondary); }
+        .stat:nth-child(3) { border-color: var(--accent); }
+        .stat:nth-child(4) { border-color: var(--green); }
+        .stat-value { font-size: 2rem; font-weight: 700; }
+        .stat-label { margin-top: 6px; color: var(--muted); font-size: 0.95rem; }
+        .curve-note {
+            margin-top: 40px; padding: 24px; border-radius: 12px; line-height: 1.7; color: var(--muted);
+            background: rgba(119, 0, 255, 0.08); border: 1px solid rgba(119, 0, 255, 0.35);
+        }
+        .curve-note strong { color: var(--light); }
+
+        /* Steps */
+        .steps { display: flex; justify-content: space-between; margin-top: 20px; position: relative; }
+        .steps::before { content: ''; position: absolute; top: 40px; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--accent)); z-index: 1; }
+        .step { text-align: center; position: relative; z-index: 2; flex: 1; padding: 0 18px; }
+        .step-number {
+            width: 80px; height: 80px; border-radius: 50%; background: var(--darker); border: 2px solid var(--primary);
+            display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+            font-size: 1.8rem; font-weight: 700; color: var(--primary); box-shadow: 0 0 20px rgba(0, 243, 255, 0.3);
+        }
+        .step h3 { margin-bottom: 12px; color: var(--primary); }
+        .step p { color: var(--muted); line-height: 1.6; }
+
+        /* CTA */
+        .cta-section { padding: 100px 0; text-align: center; background: radial-gradient(circle at center, rgba(119, 0, 255, 0.2) 0%, transparent 70%); }
+        .cta-section h2 { font-size: 2.5rem; margin-bottom: 20px; color: var(--primary); }
+        .cta-section p { font-size: 1.15rem; max-width: 640px; margin: 0 auto 36px; color: var(--muted); line-height: 1.6; }
+
+        /* Modals */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(5, 5, 16, 0.9); z-index: 2000; overflow-y: auto; }
+        .modal.open { display: block; }
+        .modal-content {
+            background: var(--darker); margin: 60px auto; padding: 30px; border-radius: 15px; width: 90%; max-width: 760px;
+            border: 1px solid var(--primary); box-shadow: 0 0 30px rgba(0, 243, 255, 0.3); position: relative;
+        }
+        .modal-content.small { max-width: 400px; }
+        .close-modal { position: absolute; top: 12px; right: 15px; font-size: 1.6rem; color: var(--primary); background: none; border: none; cursor: pointer; }
+        .close-modal:hover { color: var(--accent); }
+        .modal h2 { color: var(--primary); margin-bottom: 8px; }
+        .modal h3 { color: var(--primary); margin: 22px 0 10px; }
+        .modal p, .modal li { color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+        .modal ul { padding-left: 20px; }
+
+        .wallet-list { display: flex; flex-direction: column; gap: 10px; margin-top: 18px; }
+        .wallet-option {
+            display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border-radius: 10px;
+            background: rgba(0, 243, 255, 0.06); border: 1px solid rgba(0, 243, 255, 0.25); color: var(--light);
+            cursor: pointer; font-size: 1rem; font-weight: 600; transition: border-color 0.2s ease;
+        }
+        .wallet-option:hover { border-color: var(--primary); }
+        .wallet-option small { color: var(--muted); font-weight: 400; }
+        .wallet-option small.detected { color: var(--green); }
+
+        /* Footer */
+        footer { padding: 50px 0 20px; background: rgba(5, 5, 16, 0.9); border-top: 1px solid rgba(0, 243, 255, 0.2); }
+        .footer-content { display: flex; justify-content: space-between; gap: 40px; margin-bottom: 30px; }
+        .footer-logo { font-size: 1.6rem; font-weight: 700; color: var(--primary); margin-bottom: 14px; }
+        .footer-info p { color: var(--muted); }
+        .social-links { display: flex; gap: 15px; margin-top: 20px; }
+        .social-links a {
+            display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%;
+            background: rgba(0, 243, 255, 0.1); color: var(--primary); transition: all 0.3s ease;
+        }
+        .social-links a:hover { background: var(--primary); color: var(--darker); transform: translateY(-3px); }
+        .footer-links { display: flex; gap: 40px; }
+        .footer-column h3 { color: var(--primary); margin-bottom: 16px; font-size: 1.1rem; }
+        .footer-column ul { list-style: none; }
+        .footer-column li { margin-bottom: 10px; }
+        .footer-column a { color: rgba(224, 248, 255, 0.7); text-decoration: none; }
+        .footer-column a:hover { color: var(--primary); }
+        .disclaimer-text { font-size: 0.85rem; color: rgba(224, 248, 255, 0.5); line-height: 1.6; max-width: 900px; margin: 0 auto 20px; text-align: center; }
+        .copyright { text-align: center; padding-top: 20px; border-top: 1px solid rgba(0, 243, 255, 0.1); color: rgba(224, 248, 255, 0.5); font-size: 0.9rem; }
+
+        /* Toast */
+        .toast {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px);
+            background: var(--dark); border: 1px solid var(--primary); color: var(--light);
+            padding: 12px 22px; border-radius: 30px; z-index: 3000; transition: transform 0.3s ease; pointer-events: none;
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 860px) {
+            nav { display: none; }
+            .hero h1 { font-size: 2.6rem; }
+            .steps { flex-direction: column; gap: 40px; }
+            .steps::before { display: none; }
+            .footer-content, .footer-links { flex-direction: column; gap: 30px; }
+            .modal-content { width: 94%; padding: 22px; }
+            .ca-box code { max-width: 200px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo"><i class="fas fa-atom"></i><span>QUANTUM GAIN</span></div>
+                <nav>
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#tokenomics">Tokenomics</a></li>
+                        <li><a href="#how-to-buy">How to Buy</a></li>
+                    </ul>
+                </nav>
+                <div class="wallet-wrap">
+                    <button class="cta-button" id="connect-wallet"><i class="fas fa-wallet"></i><span>Connect Wallet</span></button>
+                    <div class="wallet-menu" id="wallet-menu">
+                        <div class="row"><span>Wallet</span><strong id="wm-name">—</strong></div>
+                        <div class="row"><span>Address</span><strong id="wm-addr">—</strong></div>
+                        <div class="row"><span>SOL</span><strong id="wm-sol">—</strong></div>
+                        <div class="row"><span class="ticker-label">$QG</span><strong id="wm-token">—</strong></div>
+                        <button id="wm-copy"><i class="far fa-copy"></i> Copy address</button>
+                        <button id="wm-disconnect" class="danger"><i class="fas fa-power-off"></i> Disconnect</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="quantum-circuit" id="circuit"></div>
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="badge"><i class="fas fa-bolt"></i> Live on pump.fun · Solana</div>
+            <h1>Quantum Gain</h1>
+            <div class="ticker" id="hero-ticker">$QG</div>
+            <p>The only token existing in a superposition of up-only and down-bad until you open the chart. No presale. No taxes. No roadmap promises. Just a memecoin on Solana and the community that memes it.</p>
+
+            <div class="ca-box">
+                <span class="label">CA</span>
+                <code id="ca-text">Contract address drops at launch</code>
+                <button id="copy-ca" title="Copy contract address"><i class="far fa-copy"></i></button>
+            </div>
+
+            <div class="hero-buttons">
+                <a class="cta-button" id="buy-btn" href="https://pump.fun" target="_blank" rel="noopener"><i class="fas fa-rocket"></i> Buy on pump.fun</a>
+                <a class="secondary-button" id="chart-btn" href="#" target="_blank" rel="noopener"><i class="fas fa-chart-line"></i> View Chart</a>
+                <button class="secondary-button" id="lore-btn"><i class="fas fa-scroll"></i> Read the Lore</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="features" id="about">
+        <div class="container">
+            <h2 class="section-title">Quantum Properties</h2>
+            <p class="section-sub">The quantum part is vibes. The on-chain part is standard pump.fun — which is exactly what you want from a memecoin.</p>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-wave-square"></i></div>
+                    <h3>Superposition</h3>
+                    <p>$QG is simultaneously mooning and crashing until observed. Collapse the wave function at your own risk.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-ban"></i></div>
+                    <h3>Zero Tax</h3>
+                    <p>No buy tax, no sell tax, no hidden fees in the token itself. It's a plain SPL token created through pump.fun.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-lock"></i></div>
+                    <h3>Fixed Supply</h3>
+                    <p>1,000,000,000 tokens, ever. Mint authority is revoked at creation by pump.fun, so nobody can print more.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="fas fa-water"></i></div>
+                    <h3>Auto Liquidity</h3>
+                    <p>When the bonding curve completes, pump.fun's contract migrates liquidity to the DEX automatically — the team doesn't control the pool.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tokenomics -->
+    <section class="tokenomics" id="tokenomics">
+        <div class="container">
+            <h2 class="section-title">Tokenomics</h2>
+            <p class="section-sub">Standard pump.fun launch mechanics. Everything below is verifiable on-chain once the CA is live.</p>
+            <div class="stats-grid">
+                <div class="stat"><div class="stat-value">1B</div><div class="stat-label">Total supply</div></div>
+                <div class="stat"><div class="stat-value">0%</div><div class="stat-label">Buy / sell tax</div></div>
+                <div class="stat"><div class="stat-value">None</div><div class="stat-label">Presale or private round</div></div>
+                <div class="stat"><div class="stat-value">Revoked</div><div class="stat-label">Mint &amp; freeze authority</div></div>
+            </div>
+            <div class="curve-note">
+                <strong>How the bonding curve works:</strong> Most of the supply is sold along pump.fun's bonding curve — price rises as people buy and falls as they sell. Once the curve fills, the remaining tokens plus the collected SOL are deposited as DEX liquidity automatically and trading continues there. Holder distribution, including any dev wallet, is visible on the pump.fun page and any Solana explorer.
+            </div>
+        </div>
+    </section>
+
+    <!-- How to Buy -->
+    <section class="how-it-works" id="how-to-buy">
+        <div class="container">
+            <h2 class="section-title">How to Buy</h2>
+            <p class="section-sub">Four steps from zero to entangled.</p>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Get a Wallet</h3>
+                    <p>Install Phantom, Solflare or Backpack on desktop or mobile.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Get SOL</h3>
+                    <p>Buy SOL on an exchange or in-wallet and send it to your Solana address.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Open pump.fun</h3>
+                    <p>Hit "Buy on pump.fun" above, or paste the CA into pump.fun search. Always double-check the CA.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <h3>Swap for $QG</h3>
+                    <p>Connect your wallet, enter an amount of SOL and confirm. Welcome to the superposition.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Observe the Chart</h2>
+            <p>Follow on X for launch time and the CA. Only trust the address posted here and on our official X account.</p>
+            <div class="hero-buttons">
+                <a class="cta-button" id="x-cta" href="https://x.com/Andyphgl" target="_blank" rel="noopener"><i class="fab fa-x-twitter"></i> Follow on X</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Lore Modal -->
+    <div class="modal" id="lore-modal">
+        <div class="modal-content">
+            <button class="close-modal" data-close>&times;</button>
+            <h2>The Quantum Gain Lore</h2>
+            <p>A totally serious document about an unserious coin.</p>
+
+            <h3>Origin</h3>
+            <p>Somewhere between a physics lecture and a 3am chart session, someone asked: what if a token was simultaneously the best and worst trade you ever made? $QG is the answer.</p>
+
+            <h3>What $QG is</h3>
+            <ul>
+                <li>A memecoin on Solana, created and launched through pump.fun.</li>
+                <li>Fixed supply of 1,000,000,000. No taxes. No presale.</li>
+                <li>Liquidity handled by pump.fun's contract when the bonding curve completes.</li>
+            </ul>
+
+            <h3>What $QG is not</h3>
+            <ul>
+                <li>Not an investment product. There's no yield, no redistribution and no promise of returns.</li>
+                <li>Not quantum computing. Sorry, physicists.</li>
+            </ul>
+
+            <h3>Plans</h3>
+            <p>Memes, community, and whatever the community decides to build. If it's not on-chain or announced in official channels, it's not real.</p>
+        </div>
+    </div>
+
+    <!-- Wallet Picker Modal -->
+    <div class="modal" id="wallet-modal">
+        <div class="modal-content small">
+            <button class="close-modal" data-close>&times;</button>
+            <h2>Connect a Wallet</h2>
+            <p>Solana wallets only.</p>
+            <div class="wallet-list" id="wallet-list"></div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <div class="footer-logo">QUANTUM GAIN</div>
+                    <p>A Solana memecoin launched on pump.fun.</p>
+                    <div class="social-links">
+                        <a id="x-link" href="https://x.com/Andyphgl" target="_blank" rel="noopener" title="X"><i class="fab fa-x-twitter"></i></a>
+                        <a id="dex-link" href="#" target="_blank" rel="noopener" title="Chart"><i class="fas fa-chart-line"></i></a>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h3>Token</h3>
+                        <ul>
+                            <li><a href="#tokenomics">Tokenomics</a></li>
+                            <li><a href="#how-to-buy">How to Buy</a></li>
+                            <li><a href="#" id="footer-lore">Lore</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-column">
+                        <h3>Links</h3>
+                        <ul>
+                            <li><a id="pump-link" href="https://pump.fun" target="_blank" rel="noopener">pump.fun</a></li>
+                            <li><a id="solscan-link" href="#" target="_blank" rel="noopener">Solscan</a></li>
+                            <li><a id="dex-link-2" href="#" target="_blank" rel="noopener">DexScreener</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <p class="disclaimer-text">$QG is a memecoin with no intrinsic value or expectation of financial return. There is no formal team, roadmap or utility. Crypto is highly volatile — only use money you can afford to lose. Nothing on this site is financial advice.</p>
+            <div class="copyright">&copy; <span id="year">2026</span> Quantum Gain. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    /* ================================================================
+       CONFIG — edit these before/at launch
+       ================================================================ */
+    const CONFIG = {
+        TICKER: 'QG',
+        CA: '5tgzzSbngEetnBkGbAFYoU4eL7GmPHMVjsDbXWFouedM',
+        X: 'https://x.com/Andyphgl',
+        RPC: 'https://api.mainnet-beta.solana.com' // swap for a Helius/QuickNode URL to avoid rate limits
+    };
+
+    /* ================================================================
+       Helpers
+       ================================================================ */
+    const $ = (id) => document.getElementById(id);
+    const shortAddr = (a) => a ? a.slice(0, 4) + '…' + a.slice(-4) : '';
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    function toast(msg) {
+        const t = $('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toast._t);
+        toast._t = setTimeout(() => t.classList.remove('show'), 2200);
+    }
+
+    async function copy(text, label) {
+        try { await navigator.clipboard.writeText(text); toast(label + ' copied'); }
+        catch { toast('Copy failed — select and copy manually'); }
+    }
+
+    const store = {
+        get(k) { try { return localStorage.getItem(k); } catch { return null; } },
+        set(k, v) { try { localStorage.setItem(k, v); } catch {} },
+        del(k) { try { localStorage.removeItem(k); } catch {} }
+    };
+
+    /* ================================================================
+       Page setup: links, CA, background
+       ================================================================ */
+    function applyConfig() {
+        const hasCA = CONFIG.CA && CONFIG.CA.length > 30;
+        const pump = hasCA ? `https://pump.fun/coin/${CONFIG.CA}` : 'https://pump.fun';
+        const dex  = hasCA ? `https://dexscreener.com/solana/${CONFIG.CA}` : 'https://dexscreener.com/solana';
+        const scan = hasCA ? `https://solscan.io/token/${CONFIG.CA}` : 'https://solscan.io';
+
+        $('hero-ticker').textContent = '$' + CONFIG.TICKER;
+        document.querySelectorAll('.ticker-label').forEach(el => el.textContent = '$' + CONFIG.TICKER);
+        $('ca-text').textContent = hasCA ? CONFIG.CA : 'Contract address drops at launch';
+        $('buy-btn').href = pump; $('pump-link').href = pump;
+        $('chart-btn').href = dex; $('dex-link').href = dex; $('dex-link-2').href = dex;
+        $('solscan-link').href = scan;
+        $('x-link').href = $('x-cta').href = CONFIG.X;
+        $('year').textContent = new Date().getFullYear();
+
+        $('copy-ca').addEventListener('click', () => {
+            if (!hasCA) return toast('CA not live yet — watch our X');
+            copy(CONFIG.CA, 'Contract address');
+        });
+    }
+
+    function buildCircuit() {
+        const circuit = $('circuit');
+        for (let i = 0; i < 15; i++) {
+            const line = document.createElement('div');
+            line.className = 'circuit-line';
+            line.style.top = `${Math.random() * 100}%`;
+            line.style.animationDelay = `${Math.random() * 8}s`;
+            circuit.appendChild(line);
+        }
+        for (let i = 0; i < 30; i++) {
+            const node = document.createElement('div');
+            node.className = 'circuit-node';
+            node.style.left = `${Math.random() * 100}%`;
+            node.style.top = `${Math.random() * 100}%`;
+            node.style.animationDelay = `${Math.random() * 4}s`;
+            circuit.appendChild(node);
+        }
+    }
+
+    /* ================================================================
+       Modals
+       ================================================================ */
+    function openModal(id) { $(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
+    function closeModals() {
+        document.querySelectorAll('.modal.open').forEach(m => m.classList.remove('open'));
+        document.body.style.overflow = '';
+    }
+    document.addEventListener('click', (e) => {
+        if (e.target.matches('[data-close]') || e.target.classList.contains('modal')) closeModals();
+    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModals(); });
+
+    /* ================================================================
+       Solana wallet connect (Phantom / Solflare / Backpack)
+       ================================================================ */
+    const WALLETS = [
+        {
+            id: 'phantom', name: 'Phantom',
+            get: () => (window.phantom?.solana?.isPhantom ? window.phantom.solana : (window.solana?.isPhantom ? window.solana : null)),
+            install: 'https://phantom.com/download',
+            deeplink: (u) => `https://phantom.app/ul/browse/${encodeURIComponent(u)}?ref=${encodeURIComponent(location.origin)}`
+        },
+        {
+            id: 'solflare', name: 'Solflare',
+            get: () => (window.solflare?.isSolflare ? window.solflare : null),
+            install: 'https://solflare.com/download',
+            deeplink: (u) => `https://solflare.com/ul/v1/browse/${encodeURIComponent(u)}?ref=${encodeURIComponent(location.origin)}`
+        },
+        {
+            id: 'backpack', name: 'Backpack',
+            get: () => (window.backpack?.isBackpack ? window.backpack : null),
+            install: 'https://backpack.app/download'
+        }
+    ];
+
+    const state = { wallet: null, provider: null, address: null };
+
+    function renderWalletList() {
+        const list = $('wallet-list');
+        list.innerHTML = '';
+        WALLETS.forEach(w => {
+            const detected = !!w.get();
+            const btn = document.createElement('button');
+            btn.className = 'wallet-option';
+            let hint = detected ? 'Detected' : (isMobile && w.deeplink ? 'Open in app' : 'Install');
+            btn.innerHTML = `<span>${w.name}</span><small class="${detected ? 'detected' : ''}">${hint}</small>`;
+            btn.addEventListener('click', () => {
+                if (detected) return connect(w);
+                if (isMobile && w.deeplink) { location.href = w.deeplink(location.href); return; }
+                window.open(w.install, '_blank', 'noopener');
+            });
+            list.appendChild(btn);
+        });
+    }
+
+    async function connect(w, silent = false) {
+        const provider = w.get();
+        if (!provider) return;
+        try {
+            const res = await provider.connect(silent ? { onlyIfTrusted: true } : undefined);
+            const pk = res?.publicKey || provider.publicKey;
+            if (!pk) throw new Error('No public key returned');
+            state.wallet = w; state.provider = provider; state.address = pk.toString();
+            store.set('qg_wallet', w.id);
+
+            // react to account switches / disconnects from inside the wallet
+            if (provider.on) {
+                provider.on('accountChanged', (newPk) => {
+                    if (newPk) { state.address = newPk.toString(); updateUI(); loadBalances(); }
+                    else { handleDisconnected(); }
+                });
+                provider.on('disconnect', handleDisconnected);
+            }
+
+            closeModals();
+            updateUI();
+            loadBalances();
+            if (!silent) toast(`Connected to ${w.name}`);
+        } catch (err) {
+            if (!silent) toast(err?.code === 4001 ? 'Connection rejected' : 'Could not connect wallet');
+        }
+    }
+
+    async function disconnect() {
+        try { await state.provider?.disconnect(); } catch {}
+        handleDisconnected();
+        toast('Wallet disconnected');
+    }
+
+    function handleDisconnected() {
+        state.wallet = state.provider = state.address = null;
+        store.del('qg_wallet');
+        $('wallet-menu').classList.remove('open');
+        updateUI();
+    }
+
+    function updateUI() {
+        const btn = $('connect-wallet');
+        if (state.address) {
+            btn.classList.add('connected');
+            btn.querySelector('span').textContent = shortAddr(state.address);
+            $('wm-name').textContent = state.wallet.name;
+            $('wm-addr').textContent = shortAddr(state.address);
+        } else {
+            btn.classList.remove('connected');
+            btn.querySelector('span').textContent = 'Connect Wallet';
+            $('wm-sol').textContent = '—';
+            $('wm-token').textContent = '—';
+        }
+    }
+
+    async function rpc(method, params) {
+        const r = await fetch(CONFIG.RPC, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ jsonrpc: '2.0', id: 1, method, params })
+        });
+        const j = await r.json();
+        if (j.error) throw new Error(j.error.message);
+        return j.result;
+    }
+
+    async function loadBalances() {
+        if (!state.address) return;
+        $('wm-sol').textContent = '…';
+        $('wm-token').textContent = CONFIG.CA ? '…' : 'Not live';
+        try {
+            const bal = await rpc('getBalance', [state.address]);
+            $('wm-sol').textContent = (bal.value / 1e9).toFixed(3);
+        } catch { $('wm-sol').textContent = 'n/a'; }
+
+        if (!CONFIG.CA) return;
+        try {
+            const res = await rpc('getTokenAccountsByOwner', [state.address, { mint: CONFIG.CA }, { encoding: 'jsonParsed' }]);
+            const total = res.value.reduce((s, a) => s + (a.account.data.parsed.info.tokenAmount.uiAmount || 0), 0);
+            $('wm-token').textContent = total.toLocaleString(undefined, { maximumFractionDigits: 0 });
+        } catch { $('wm-token').textContent = 'n/a'; }
+    }
+
+    function initWallet() {
+        $('connect-wallet').addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (state.address) { $('wallet-menu').classList.toggle('open'); loadBalances(); return; }
+            renderWalletList();
+            openModal('wallet-modal');
+        });
+        $('wallet-menu').addEventListener('click', (e) => e.stopPropagation());
+        document.addEventListener('click', () => $('wallet-menu').classList.remove('open'));
+        $('wm-copy').addEventListener('click', () => copy(state.address, 'Address'));
+        $('wm-disconnect').addEventListener('click', disconnect);
+
+        // Silent reconnect for returning visitors (wallet extensions inject a bit late)
+        const last = store.get('qg_wallet');
+        if (last) {
+            const w = WALLETS.find(x => x.id === last);
+            if (w) setTimeout(() => connect(w, true), 400);
+        }
+    }
+
+    /* ================================================================
+       Boot
+       ================================================================ */
+    document.addEventListener('DOMContentLoaded', () => {
+        applyConfig();
+        buildCircuit();
+        initWallet();
+        $('lore-btn').addEventListener('click', () => openModal('lore-modal'));
+        $('footer-lore').addEventListener('click', (e) => { e.preventDefault(); openModal('lore-modal'); });
+    });
+    </script>
+</body>
+</html>
